@@ -1,12 +1,22 @@
 package main
 
 import (
+	"flag"
+	"gin-plus/pkg/setting"
 	"gin-plus/routes"
+	"github.com/gin-gonic/gin"
 	"log"
 )
 
 func main() {
-	//初始化路由
+	//1.读取配置文件
+	//支持通过命令行参数 -f 指定配置文件路径
+	var filePath = flag.String("f", "", "配置文件路径")
+	flag.Parse()
+	setting.Init(*filePath)
+
+	//2.初始化路由
+	gin.SetMode(setting.Config.Mode)
 	router := routes.Init()
 
 	err := router.Run(":8080")
