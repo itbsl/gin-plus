@@ -1,13 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"gin-plus/routes"
+	"log"
+)
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run(":8080")
+	//初始化路由
+	router := routes.Init()
+
+	err := router.Run(":8080")
+	if err != nil {
+		log.Fatalf("项目启动失败:%v\n", err)
+	}
 }
