@@ -28,3 +28,7 @@
 ## 框架
 
 - Gin: https://github.com/gin-gonic/gin
+
+## 组件
+
+- 配置文件管理组件：viper https://github.com/spf13/viper
