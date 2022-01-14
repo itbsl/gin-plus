@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"gin-plus/app/dao/mysql"
 	"gin-plus/global"
 	"gin-plus/pkg/logger"
 	"gin-plus/pkg/setting"
@@ -30,7 +31,11 @@ func main() {
 		log.Fatalf("logger.Init() failed: %v\n", err)
 	}
 
-	//3.初始化路由
+	//3.初始化MySQL
+	if err := mysql.Init(global.Config.MySQLConfig); err != nil {
+		log.Fatalf("mysql.Init() failed: %v\n", err)
+	}
+	//4.初始化路由
 	gin.SetMode(global.Config.Mode)
 	router := routes.Init()
 
