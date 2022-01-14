@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"gin-plus/global"
+	"gin-plus/pkg/logger"
 	"gin-plus/pkg/setting"
 	"gin-plus/routes"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
@@ -24,8 +25,12 @@ func main() {
 	flag.Parse()
 	setting.Init(*filePath)
 
-	//2.初始化路由
-	fmt.Println(global.Config.Mode)
+	//2.初始化日志
+	if err := logger.Init(global.Config.LogConfig); err != nil {
+		log.Fatalf("logger.Init() failed: %v\n", err)
+	}
+
+	//3.初始化路由
 	gin.SetMode(global.Config.Mode)
 	router := routes.Init()
 
@@ -40,7 +45,7 @@ func main() {
 	go func() {
 		//开启一个goroutine启动服务
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("HTTP服务启动失败：server.ListenAndServe() failed: %v\n", err)
+			zap.L().Fatal("HTTP服务启动失败：server.ListenAndServe() failed.", zap.Error(err))
 		}
 	}()
 	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
@@ -51,13 +56,13 @@ func main() {
 	// signal.Notify把收到的 syscall.SIGINT或syscall.SIGTERM 信号转发给quit
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit //阻塞在此，当接收到上述两种信号时才会往下执行
-	log.Printf("Shutdown Server ...")
+	zap.L().Info("Shutdown Server ...")
 	//创建一个5秒超时的context
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	// 5秒内优雅关闭服务（将未处理完的请求处理完再关闭服务），超过5秒就超时退出
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("Server Shutdown err: %v\n", err)
+		zap.L().Fatal("Server Shutdown err.", zap.Error(err))
 	}
-	log.Println("Server Exited")
+	zap.L().Info("Server Exited")
 }
