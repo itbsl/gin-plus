@@ -2,19 +2,27 @@ package setting
 
 import (
 	"fmt"
+	"gin-plus/global"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
-	"time"
+	"os"
 )
-
-// Config 全局变量, 用来保存程序所有配置信息
-var Config = new(Configure)
 
 func Init(filePath string) {
 	//1.指定配置文件路径
+	//(1)如果指定了配置文件，优先使用显式指定的值
+	//(2)如果没有显式指定配置文件，通过系统环境变量获取当前所处的运行模式(通过设置测试和线上运行环境变量能使得线上线下配置隔离)
+	//不用修改任何代码而且线上和线下的配置文件隔离开
+	//(3)如果既没有显式指定配置文件路径，也没有设置系统环境变量，则从默认的配置文件路径找
 	if filePath != "" {
 		viper.SetConfigFile(filePath)
+	} else if os.Getenv("gin_plus_mode") != "" {
+		//也可以直接使用viper封装的方法
+		//viper.AutomaticEnv()
+		//mode := viper.GetString("gin_plus_mode")
+		mode := os.Getenv("gin_plus_mode")
+		viper.SetConfigFile("./config/config." + mode + ".yaml")
 	} else {
 		viper.SetConfigFile("./config/config.dev.yaml")
 	}
@@ -25,80 +33,15 @@ func Init(filePath string) {
 		log.Fatalf("viper.ReadInConfig() failed: %v\n", err)
 	}
 	//3.将读取到的信息反序列化到全局变量Config
-	if err = viper.Unmarshal(Config); err != nil {
+	if err = viper.Unmarshal(global.Config); err != nil {
 		log.Fatalf("viper.Unmarshal() failed: %v\n", err)
 	}
 	//4.监听配置文件，当配置文件发生修改后立即更新配置文件信息到全局变量Config
 	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {
-		fmt.Printf("配置文件修改了...\n")
-		if err = viper.Unmarshal(Config); err != nil {
+		fmt.Printf("配置文件%s修改了...\n", in.Name)
+		if err = viper.Unmarshal(global.Config); err != nil {
 			log.Fatalf("viper.Unmarshal() failed: %v\n", err)
 		}
 	})
-}
-
-type Configure struct {
-	*AppConfig      `mapstructure:"app"`
-	*ServerConfig   `mapstructure:"server"`
-	*LogConfig      `mapstructure:"log"`
-	*MySQLConfig    `mapstructure:"mysql"`
-	*RedisConfig    `mapstructure:"redis"`
-	*RabbitMQConfig `mapstructure:"rabbitmq"`
-}
-
-type AppConfig struct {
-	Name            string        `mapstructure:"name"`
-	Mode            string        `mapstructure:"mode"`
-	URL             string        `mapstructure:"url"`
-	Version         string        `mapstructure:"version"`
-	JWTSecret       string        `mapstructure:"jwtSecret"`
-	JWTTokenExpired time.Duration `mapstructure:"jwtTokenExpired"`
-}
-
-type ServerConfig struct {
-	Port         int           `mapstructure:"port"`
-	ReadTimeout  time.Duration `mapstructure:"readTimeout"`
-	WriteTimeout time.Duration `mapstructure:"writeTimeout"`
-}
-
-type LogConfig struct {
-	Filename   string `mapstructure:"filename"`
-	Ext        string `mapstructure:"ext"`
-	Level      string `mapstructure:"level"`
-	MaxSize    int    `mapstructure:"maxSize"`
-	MaxAge     int    `mapstructure:"maxAge"`
-	MaxBackups int    `mapstructure:"maxBackups"`
-	SavePath   string `mapstructure:"savePath"`
-}
-
-type MySQLConfig struct {
-	Host              string        `mapstructure:"host"`
-	Port              int           `mapstructure:"port"`
-	Database          string        `mapstructure:"database"`
-	Username          string        `mapstructure:"username"`
-	Password          string        `mapstructure:"password"`
-	TablePrefix       string        `mapstructure:"tablePrefix"`
-	SingularTable     bool          `mapstructure:"singularTable"`
-	Charset           string        `mapstructure:"charset"`
-	DefaultStringSize uint          `mapstructure:"defaultStringSize"`
-	ParseTime         bool          `mapstructure:"parseTime"`
-	MaxIdleConns      int           `mapstructure:"maxIdleConns"`
-	MaxOpenConns      int           `mapstructure:"maxOpenConns"`
-	ConnMaxLifetime   time.Duration `mapstructure:"connMaxLifetime"`
-}
-
-type RedisConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Password string `mapstructure:"password"`
-	DB       int    `mapstructure:"db"`
-	PoolSize int    `mapstructure:"poolSize"`
-}
-
-type RabbitMQConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
 }

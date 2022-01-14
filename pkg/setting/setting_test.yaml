@@ -1,0 +1,58 @@
+# app配置
+app:
+  name: gin-plus # 项目(服务)名称
+  mode: debug # debug:开发环境 test:测试环境 release:线上环境
+  url: https://www.itbsl.com
+  version: v0.0.1
+  jwtSecret: 1234567 # token 密钥，生产环境时及的修改
+  jwtTokenExpired: 3600 # jwt的token有效期 单位：秒
+
+# server配置
+server:
+  port: 8080
+  readTimeout: 20
+  writeTimeout: 20
+
+# log配置
+log:
+  filename: app # 日志文件名称
+  ext: .log # 日志文件后缀
+  level: debug
+  maxSize: 200 # 单位(兆:M)
+  maxAge: 30 # 单位(天)
+  maxBackups: 7 # 日志文件备份数量
+  savePath: storage/logs/ # 存储路径
+
+# mysql配置
+mysql:
+  host: 172.16.114.128
+  port: 3306
+  database: blog
+  username: root
+  password: root
+  tablePrefix: blog_
+  singularTable: true
+  charset: utf8mb4
+  defaultStringSize: 171
+  parseTime: true
+  maxIdleConns: 10
+  maxOpenConns: 100
+  connMaxLifetime: 60
+
+# redis配置
+redis:
+  host: 172.16.114.128
+  port: 6379
+  password: ""
+  db: 0
+  poolSize: 100
+
+# rabbitMQ配置
+rabbitmq:
+  host: 172.16.114.128
+  port: 5672
+  username: root
+  password: root
+
+
+

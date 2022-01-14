@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"gin-plus/global"
 	"gin-plus/pkg/setting"
 	"gin-plus/routes"
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func main() {
 	setting.Init(*filePath)
 
 	//2.初始化路由
-	gin.SetMode(setting.Config.Mode)
+	gin.SetMode(global.Config.Mode)
 	router := routes.Init()
 
 	err := router.Run(":8080")
