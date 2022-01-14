@@ -53,6 +53,7 @@ go build
 - 日志库： https://github.com/uber-go/zap
 - 日志切割：https://github.com/natefinch/lumberjack
 - ORM库：https://github.com/go-gorm/gorm
+- redis库：https://github.com/go-redis/redis
 
 ### viper
 

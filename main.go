@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"gin-plus/app/dao/mysql"
+	"gin-plus/app/dao/redis"
 	"gin-plus/global"
 	"gin-plus/pkg/logger"
 	"gin-plus/pkg/setting"
@@ -35,11 +36,18 @@ func main() {
 	if err := mysql.Init(global.Config.MySQLConfig); err != nil {
 		log.Fatalf("mysql.Init() failed: %v\n", err)
 	}
-	//4.初始化路由
+
+	//4.初始化Redis
+	if err := redis.Init(global.Config.RedisConfig); err != nil {
+		log.Fatalf("redis.Init() failed: %v\n", err)
+	}
+	defer redis.Close()
+
+	//5.初始化路由
 	gin.SetMode(global.Config.Mode)
 	router := routes.Init()
 
-	//启动服务
+	//6.启动服务
 	server := http.Server{
 		Addr:           ":" + strconv.Itoa(global.Config.ServerConfig.Port),
 		Handler:        router,
