@@ -35,6 +35,14 @@
 └── scripts                 # 脚本相关文件
 ```
 
+## 使用
+```shell
+git clone https://github.com/itbsl/gin-plus.git
+cd gin-plus
+go mod tidy
+go build
+./gin-plus -f ./config/config.dev.yaml
+```
 ## 框架
 
 - Gin: https://github.com/gin-gonic/gin
