@@ -10,7 +10,15 @@
 ├── app                     # 业务代码目录
 │   ├── controller    # 控制器层 - 参数校验，数据返回
 │   ├── dao           # 数据访问层(Database Access Object)，所有与数据操作相关的操作都会在dao层进行
-│   ├── middleware    # HTTP中间件 
+│   │   ├── mysql
+│   │   │   ├── mysql.go
+│   │   │   └── mysql_test.go
+│   │   └── redis
+│   │       ├── redis.go
+│   │       └── redis_test.go
+│   ├── middleware
+│   │   ├── jwt.go
+│   │   └── translator.go   
 │   ├── model         # 模型层，用于存放model对象
 │   ├── proto         # proto文件
 │   └── service       # 项目核心业务逻辑
@@ -26,13 +34,30 @@
 ├── go.sum
 ├── main.go                 # 项目入口
 ├── pkg                     # 项目相关的模块包
+│   ├── app           # jwt
+│   │   └── jwt.go
+│   ├── logger        # 日志
+│   │   └── logger.go
+│   ├── setting
+│   │   ├── setting.go   # 配置文件读取
+│   │   ├── setting_test.go # 单元测试文件
+│   │   └── setting_test.yaml # 单元测试用例
+│   └── snowflake      # 雪花算法
+│       └── snowflake.go
+
 │   └── setting
-│       ├── setting.go       # 配置文件读取
-│       ├── setting_test.go  # 单元测试文件
-│       └── setting_test.yaml # 单元测试用例
+│       ├── setting.go       
+│       ├── setting_test.go  
+│       └── setting_test.yaml 
 ├── routes                  # 路由模块(所有的路由都定义在该目录下)
 │   └── routes.go
 └── scripts                 # 脚本相关文件
+├── sql                     # 建表sql
+│   └── user.sql      # 用户表(示例)
+└── storage                 # 日志等临时文件
+    └── logs
+        └── app.log
+
 ```
 
 ## 使用
@@ -54,6 +79,7 @@ go build
 - 日志切割：https://github.com/natefinch/lumberjack
 - ORM库：https://github.com/go-gorm/gorm
 - redis库：https://github.com/go-redis/redis
+- 雪花算法库：https://github.com/bwmarrin/snowflaketr
 
 ### viper
 

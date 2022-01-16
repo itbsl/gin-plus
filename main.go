@@ -8,6 +8,7 @@ import (
 	"gin-plus/global"
 	"gin-plus/pkg/logger"
 	"gin-plus/pkg/setting"
+	"gin-plus/pkg/snowflake"
 	"gin-plus/routes"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -47,7 +48,12 @@ func main() {
 	gin.SetMode(global.Config.Mode)
 	router := routes.Init()
 
-	//6.启动服务
+	//6.初始化雪花分布式算法生成唯一ID
+	if err := snowflake.Init(global.Config.AppConfig.StartTime, global.Config.AppConfig.MachineId); err != nil {
+		log.Fatalf("snowflake.Init() failed: %v\n", err)
+	}
+
+	//7.启动服务
 	server := http.Server{
 		Addr:           ":" + strconv.Itoa(global.Config.ServerConfig.Port),
 		Handler:        router,

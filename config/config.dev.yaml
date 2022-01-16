@@ -4,6 +4,8 @@ app:
   mode: debug # debug:开发环境 test:测试环境 release:线上环境
   url: https://www.itbsl.com
   version: v0.0.1
+  startTime: 2022-01-01
+  machineId: 1
   jwtSecret: 1234567 # token 密钥，生产环境时及的修改
   jwtTokenExpired: 3600 # jwt的token有效期 单位：秒
 

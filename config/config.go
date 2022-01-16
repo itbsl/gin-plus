@@ -16,6 +16,8 @@ type AppConfig struct {
 	Mode            string        `mapstructure:"mode"`
 	URL             string        `mapstructure:"url"`
 	Version         string        `mapstructure:"version"`
+	StartTime       string        `mapstructure:"startTime"`
+	MachineId       int64         `mapstructure:"machineId"`
 	JWTSecret       string        `mapstructure:"jwtSecret"`
 	JWTTokenExpired time.Duration `mapstructure:"jwtTokenExpired"`
 }
