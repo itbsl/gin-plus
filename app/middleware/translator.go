@@ -9,12 +9,23 @@ import (
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
+	"reflect"
+	"strings"
 )
 
 func Translations() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//修改Gin框架中的validator引擎属性，实现定制
 		if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
+			//注册一个获取json的tag自定义方法
+			validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+				name := strings.Split(field.Tag.Get("json"), ",")[0]
+				//处理特殊的json 例如： json:"-"方法，这种不应该处理
+				if name == "-" {
+					return ""
+				}
+				return name
+			})
 			zhT := zh.New() //中文翻译器
 			enT := en.New() //英文翻译器
 			//第一个参数是备用的语言环境，后面的参数是应该支持的语言环境
