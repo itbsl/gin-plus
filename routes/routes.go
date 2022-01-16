@@ -2,6 +2,7 @@ package routes
 
 import (
 	"gin-plus/app/middleware"
+	"gin-plus/pkg/resp"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,17 +15,12 @@ func Init() *gin.Engine {
 	r.Use(middleware.JWT(), middleware.Translations())
 
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "success",
-			"data": map[string]string{"ping": "pong"},
-		})
+		resp.Success(c, map[string]string{"ping": "ping"})
 	})
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code": http.StatusNotFound,
 			"msg":  http.StatusText(http.StatusNotFound),
-			"data": map[string]interface{}{},
 		})
 	})
 
